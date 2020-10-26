@@ -203,10 +203,11 @@ security_rule {
 
 
 # AD DC in Azure
+
 module "win-vm-addc-left" {
   source = "./win-vm-addc"
 
-  vm_name     = "win-left"
+  vm_name     = "win-addc-left"
   vm_rg_name  = azurerm_resource_group.resource-group-left.name 
   vm_location = azurerm_resource_group.resource-group-left.location
   vm_subnet_id= data.azurerm_subnet.def-subnet-left.id
@@ -218,7 +219,7 @@ module "win-vm-addc-left" {
   admin_password = var.admin_password
   network_security_group_id = azurerm_network_security_group.nsg-win-vm-left.id
   
-  dns_servers    = [ "10.60.1.254", "10.51.2.254"]
+  dns_servers    = [ "10.60.1.254", "10.0.0.220"]
 
   vm_private_ip_address = "10.60.1.254"
   active_directory_domain = var.ad_domain
@@ -226,11 +227,12 @@ module "win-vm-addc-left" {
   ad_create = true
 }
 
+
 # Web Server in Azure
 module "win-vm-web-left" {
   source = "./win-vm"
 
-  vm_name     = "win-vm-web-left"
+  vm_name     = "win-web-left"
   vm_rg_name  = azurerm_resource_group.resource-group-left.name 
   vm_location = azurerm_resource_group.resource-group-left.location
   vm_subnet_id= data.azurerm_subnet.def-subnet-left.id
@@ -242,7 +244,7 @@ module "win-vm-web-left" {
   admin_password = var.admin_password
   network_security_group_id = azurerm_network_security_group.nsg-win-vm-web-left.id
   
-  dns_servers    = [ "10.60.1.254", "10.51.2.254"]
+  dns_servers    = [ "10.60.1.254", "10.0.0.220"]
 
 }
 
@@ -252,7 +254,7 @@ module "win-vm-sql-left" {
   depends_on=[module.win-vm-addc-left]  
   source = "./win-vm-sql"
 
-  win_vm_sql_name  = "win-vm-sql-left"
+  win_vm_sql_name  = "win-sql-left"
   vm_rg_name       = azurerm_resource_group.resource-group-left.name 
   vm_location      = azurerm_resource_group.resource-group-left.location
   vm_subnet_id     = data.azurerm_subnet.def-subnet-left.id
@@ -273,7 +275,7 @@ module "win-vm-sql-left" {
   vm_size     = "Standard_B2ms"
   project_id  = var.project_id
 
-  dns_servers    = ["10.60.1.254", "10.51.2.254"]
+  dns_servers    = ["10.60.1.254", "10.0.0.220"]
 
   admin_username = var.admin_username
   admin_password = var.admin_password
@@ -282,7 +284,6 @@ module "win-vm-sql-left" {
   active_directory_domain = var.ad_domain
   active_directory_oupath = var.ad_sql_ou_path
 }
-
 
 /* -----------------------------------------------------------------------
 -
@@ -295,15 +296,17 @@ output "win-vm-addc-left_public_ip" {
   value = module.win-vm-addc-left.win_vm_public_ip
 }
 
+# SQL VM Public IP
+output "win-vm-sql-left_public_ip" {
+  value = module.win-vm-sql-left.win_vm_public_ip
+}
+
+
 # WEB VM Public IP
 output "win-vm-web-left-left_public_ip" {
   value = module.win-vm-web-left.win_vm_public_ip
 }
 
-# SQL VM Public IP
-output "win-vm-sql-left_public_ip" {
-  value = module.win-vm-sql-left.win_vm_public_ip
-}
 
 #
 output "witness-storage-account-key" {

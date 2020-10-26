@@ -1,3 +1,4 @@
+
 resource "azurerm_virtual_machine_extension" "join-domain" {
     name                 = "join-domain"
     virtual_machine_id   = azurerm_virtual_machine.win-vm-sql.id
@@ -25,3 +26,4 @@ resource "azurerm_virtual_machine_extension" "join-domain" {
 
     depends_on = [azurerm_virtual_machine.win-vm-sql]
 }
+
